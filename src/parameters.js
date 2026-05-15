@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Created by quanchen on 2014/12/1.
  * 参数记录;
  *
@@ -9,7 +9,7 @@
 var isTest=true;//是否为本地测试版本 true 是 false 否;
 var isNeedFps=false;//是否显示fps帧频;
 var username='洛克小蛋蛋'//用户名;
-var isNeedTeach=true;//是否出现新手教程;
+var isNeedTeach=false;//是否出现新手教程; 将在初始化时根据用户状态决定
 var isLoadBigPic=true;//是否加载大图;
 var defultW=640;
 var defultH=1008;

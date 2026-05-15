@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="utf-8"><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,maximum-scale=1.0,user-scalable=no"/>
-    <title>洛克王国-滚蛋小游戏</title>
+    <title>洛克:咕噜球快跑</title>
     <style>
         body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,th,td,p,pre,form,input,textarea{padding: 0;margin: 0;}
         table{border-collapse: collapse;border-spacing: 0;}
@@ -13,7 +13,34 @@
         a:focus{outline:none;-moz-outline:none;}
         em,strong{font-weight: normal;font-style: normal;}
         html,body{font: 14px/20px "5B8B4F53";height: 100%;overflow:hidden;background:#000;}
-        .wrap{background: url(images/inputTxt.png) repeat;background-size:cover;width: 266px;height:307px;position: absolute;left: 50%;top: 50%;margin: -153px 0 0 -128px;}
+        
+        .auth-panel{display:none;position:fixed;top:0;left:0;box-sizing:border-box;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:1001;}
+        .auth-panel.show{display:block;}
+        .auth-container{background:linear-gradient(180deg,#333,#111);box-sizing:border-box;padding:30px;margin:50px auto;width:90%;box-shadow:0 10px 40px rgba(255,107,107,0.3);border:2px solid rgba(255,107,107,0.3);border-radius: 10px;}
+        .auth-header{text-align:center;margin-bottom:30px;}
+        .auth-title{font-size:28px;font-weight:bold;color:#ff6b6b;text-shadow:0 0 10px rgba(255,107,107,0.5);margin-bottom:10px;}
+        .auth-subtitle{font-size:14px;color:#888;}
+        
+        .auth-tabs{display:flex;margin-bottom:25px;border-radius:10px;background:rgba(255,255,255,0.1);overflow:hidden;}
+        .auth-tab{flex:1;padding:12px;text-align:center;font-size:16px;color:#fff;cursor:pointer;transition:all 0.3s;}
+        .auth-tab.active{background:linear-gradient(180deg,#ff6b6b,#ee5a5a);color:#fff;}
+        
+        .auth-form{display:flex;flex-direction:column;gap:15px;}
+        .auth-input{width:100%;height:45px;border:none;border-radius:10px;padding:0 15px;font-size:16px;background:rgba(255,255,255,0.1);color:#fff;box-sizing:border-box;transition:all 0.3s;}
+        .auth-input:focus{outline:none;background:rgba(255,255,255,0.2);box-shadow:0 0 15px rgba(255,107,107,0.3);}
+        .auth-input::placeholder{color:#666;}
+        
+        .auth-btn{height:50px;border:none;border-radius:12px;font-size:18px;font-weight:bold;color:#fff;background:linear-gradient(180deg,#ff6b6b,#ee5a5a);cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(255,107,107,0.4);}
+        .auth-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,107,107,0.6);}
+        .auth-btn:active{transform:translateY(0);}
+        
+        .auth-error{display:none;color:#ff4444;font-size:13px;text-align:center;padding:10px;border-radius:8px;background:rgba(255,68,68,0.1);margin-bottom:10px;}
+        .auth-error.show{display:block;}
+        
+        .auth-success{display:none;color:#44ff44;font-size:13px;text-align:center;padding:10px;border-radius:8px;background:rgba(68,255,68,0.1);margin-bottom:10px;}
+        .auth-success.show{display:block;}
+        
+        .wrap{background: url(images/inputTxt.png) repeat;background-size:cover;width: 266px;height:307px;position: absolute;left: 50%;top: 50%;margin: -153px 0 0 -128px;display:none;}
         .w_txt,.w_btn{border: 0 none;background:0 none;width: 230px;height: 40px;position: absolute;top: 168px;left: 50%;margin-left: -115px;text-indent: 8px;}
         .w_btn{display: block;top: 225px;height: 60px;}
 
@@ -31,6 +58,10 @@
         .record-btn{position:fixed;right:15px;top:50%;transform:translateY(-50%);background:linear-gradient(180deg,#ff6b6b,#ee5a5a);color:#fff;width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 15px rgba(255,107,107,0.6);z-index:100;cursor:pointer;transition:all 0.3s ease;}
         .record-btn:hover{transform:translateY(-50%) scale(1.1);box-shadow:0 6px 20px rgba(255,107,107,0.8);}
         .record-btn .btn-text{font-size:24px;margin-top:2px;}
+        
+        .user-info{position:fixed;top:15px;left:15px;color:#fff;font-size:14px;background:rgba(0,0,0,0.6);padding:10px 15px;border-radius:8px;display:none;z-index:99;}
+        .user-info.show{display:block;}
+        .logout-btn{color:#ff6b6b;cursor:pointer;margin-left:10px;font-weight:bold;}
     </style>
     
     <script src="lib/easeljs-0.7.1.min.js"></script>
@@ -40,9 +71,7 @@
     <script src="lib/soundjs-0.5.2.min.js"></script>
 
     <script src="common/common.js"></script>
-    <!-- 穿山甲广告SDK桥接层 -->
     <script src="common/adManager.js"></script>
-    <!-- 复活面板UI -->
     <script src="common/revivePanel.js"></script>
     <script src="src/app.js"></script>
     <script src="src/loadingContent.js"></script>
@@ -52,6 +81,40 @@
     <script src="main.js"></script>
 
     <body id="bodyMain" onload="initLoading();" style="background-color: #666666">
+    
+    <div id="authPanel" class="auth-panel">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-title">🎮 洛克：咕噜球快跑</div>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">登录</div>
+                <div class="auth-tab" onclick="switchTab('register')">注册</div>
+            </div>
+            
+            <div id="authError" class="auth-error"></div>
+            <div id="authSuccess" class="auth-success"></div>
+            
+            <form class="auth-form" id="loginForm">
+                <input class="auth-input" id="loginUsername" type="text" placeholder="请输入用户名">
+                <input class="auth-input" id="loginPassword" type="password" placeholder="请输入密码">
+                <button type="button" class="auth-btn" onclick="handleLogin()">登 录</button>
+            </form>
+            
+            <form class="auth-form" id="registerForm" style="display:none;">
+                <input class="auth-input" id="regUsername" type="text" placeholder="请输入用户名（3-12位）">
+                <input class="auth-input" id="regPassword" type="password" placeholder="请输入密码（6-16位）">
+                <input class="auth-input" id="regConfirm" type="password" placeholder="请确认密码">
+                <button type="button" class="auth-btn" onclick="handleRegister()">注 册</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="userInfo" class="user-info">
+        <span id="currentUser">游客</span>
+        <span class="logout-btn" onclick="handleLogout()">退出</span>
+    </div>
 
     <div id="inputNamePanel" class="wrap">
         <input class="w_txt" id="usernameInput" type="text" maxlength="8" value="请输入！如：坏运气" onfocus="javascript:inputFocus();">
@@ -123,6 +186,7 @@
         var _fps,$time,$count = 0;
         var username='';
         var hasUsername=false;
+        var currentUser=null;
 
         init();
 
@@ -138,26 +202,194 @@
 
             SHARE_URL='http://roco.qq.com/act/a20141208game/index.html?heartNum='+HEARTNUM.toString();
             
-            checkUsername();
+            checkLoginStatus();
         }
 
-        function checkUsername()
+        function checkLoginStatus()
         {
-            var storedUsername=localStorage.getItem('game_username');
-            if(storedUsername&&storedUsername!='')
+            var storedUser=localStorage.getItem('current_user');
+            if(storedUser&&storedUser!='')
             {
-                username=storedUsername;
+                currentUser=JSON.parse(storedUser);
+                username=currentUser.username;
                 hasUsername=true;
-                console.log('已存在用户名:',username);
+                console.log('已登录用户:',username);
+                document.getElementById('userInfo').classList.add('show');
+                document.getElementById('currentUser').textContent=currentUser.username;
+                document.getElementById('authPanel').classList.remove('show');
             }
             else
             {
+                currentUser=null;
                 hasUsername=false;
-                console.log('首次进入游戏，需要输入用户名');
+                document.getElementById('authPanel').classList.add('show');
+                document.getElementById('userInfo').classList.remove('show');
             }
         }
 
-        //loading canvas加载完成的时候会调用该函数;
+        function switchTab(tab)
+        {
+            document.querySelectorAll('.auth-tab').forEach(function(el){
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if(tab=='login')
+            {
+                document.getElementById('loginForm').style.display='flex';
+                document.getElementById('registerForm').style.display='none';
+            }
+            else
+            {
+                document.getElementById('loginForm').style.display='none';
+                document.getElementById('registerForm').style.display='flex';
+            }
+            hideAuthMessage();
+        }
+
+        function handleLogin()
+        {
+            var uname=document.getElementById('loginUsername').value.trim();
+            var pwd=document.getElementById('loginPassword').value;
+            
+            if(!uname||!pwd)
+            {
+                showAuthError('请输入用户名和密码');
+                return;
+            }
+            
+            var users=localStorage.getItem('game_users');
+            var userList=users?JSON.parse(users):[];
+            
+            var found=userList.find(function(u){
+                return u.username==uname&&u.password==pwd;
+            });
+            
+            if(found)
+            {
+                currentUser=found;
+                username=found.username;
+                hasUsername=true;
+                localStorage.setItem('current_user',JSON.stringify(found));
+                
+                document.getElementById('userInfo').classList.add('show');
+                document.getElementById('currentUser').textContent=username;
+                document.getElementById('authPanel').classList.remove('show');
+                
+                showAuthSuccess('登录成功！');
+                setTimeout(function(){hideAuthMessage();},1500);
+                
+                // 根据用户是否首次游戏设置是否显示教程
+                window.isNeedTeach=(currentUser.firstPlay===undefined||currentUser.firstPlay===true);
+            }
+            else
+            {
+                showAuthError('用户名或密码错误');
+            }
+        }
+
+        function handleRegister()
+        {
+            var uname=document.getElementById('regUsername').value.trim();
+            var pwd=document.getElementById('regPassword').value;
+            var confirm=document.getElementById('regConfirm').value;
+            
+            if(!uname||!pwd||!confirm)
+            {
+                showAuthError('请填写完整信息');
+                return;
+            }
+            
+            if(uname.length<3||uname.length>12)
+            {
+                showAuthError('用户名长度必须在3-12位之间');
+                return;
+            }
+            
+            if(pwd.length<6||pwd.length>16)
+            {
+                showAuthError('密码长度必须在6-16位之间');
+                return;
+            }
+            
+            if(pwd!=confirm)
+            {
+                showAuthError('两次输入的密码不一致');
+                return;
+            }
+            
+            var users=localStorage.getItem('game_users');
+            var userList=users?JSON.parse(users):[];
+            
+            var exists=userList.find(function(u){
+                return u.username==uname;
+            });
+            
+            if(exists)
+            {
+                showAuthError('用户名已存在');
+                return;
+            }
+            
+            var newUser={
+                username:uname,
+                password:pwd,
+                createdAt:new Date().toLocaleString('zh-CN'),
+                firstPlay:true//新用户首次游戏需要显示教程
+            };
+            
+            userList.push(newUser);
+            localStorage.setItem('game_users',JSON.stringify(userList));
+            
+            currentUser=newUser;
+            username=newUser.username;
+            hasUsername=true;
+            localStorage.setItem('current_user',JSON.stringify(newUser));
+            
+            document.getElementById('userInfo').classList.add('show');
+            document.getElementById('currentUser').textContent=username;
+            document.getElementById('authPanel').classList.remove('show');
+            
+            showAuthSuccess('注册成功！');
+            setTimeout(function(){hideAuthMessage();},1500);
+            
+            // 新用户首次游戏，显示教程
+            window.isNeedTeach=true;
+        }
+
+        function handleLogout()
+        {
+            localStorage.removeItem('current_user');
+            currentUser=null;
+            username='';
+            hasUsername=false;
+            document.getElementById('userInfo').classList.remove('show');
+            document.getElementById('authPanel').classList.add('show');
+            document.getElementById('loginUsername').value='';
+            document.getElementById('loginPassword').value='';
+            switchTab('login');
+        }
+
+        function showAuthError(msg)
+        {
+            document.getElementById('authError').textContent=msg;
+            document.getElementById('authError').classList.add('show');
+            document.getElementById('authSuccess').classList.remove('show');
+        }
+
+        function showAuthSuccess(msg)
+        {
+            document.getElementById('authSuccess').textContent=msg;
+            document.getElementById('authSuccess').classList.add('show');
+            document.getElementById('authError').classList.remove('show');
+        }
+
+        function hideAuthMessage()
+        {
+            document.getElementById('authError').classList.remove('show');
+            document.getElementById('authSuccess').classList.remove('show');
+        }
+
         function initLoading()
         {
             canvasLoading=document.getElementById('canvasLoading');
@@ -168,19 +400,12 @@
             loader.addEventListener("fileload", loadingHandleFileLoad);
             loader.addEventListener("complete", loadingHandleComplete);
             loader.loadManifest(loadingLib.properties.manifest);
-
-            //initMain();
-
-
         }
 
-
-
-        //loading过程中加载图片素材;
         function loadingHandleFileLoad(evt) {
             if (evt.item.type == "image") { loadingImages[evt.item.id] = evt.result; }
         }
-        //loading素材加载完成;
+
         function loadingHandleComplete() {
             exportRoot = new loadingLib.loading();
 
@@ -191,14 +416,10 @@
             createjs.Ticker.setFPS(loadingLib.properties.fps);
             createjs.Ticker.addEventListener("tick", stage);
 
-            //初始化loading内容;
             loadingPanel=new loadingObj();
-
-            //return;
 
             if(isLoadBigPic)
             {
-                //加载大图;
                 queue.setMaxConnections(5);
                 queue.on('complete',imagesLoadComplete,this);
                 queue.on('progress',imagesLoadProgress);
@@ -209,7 +430,6 @@
                 {
                     for (prop in gamedataArr[i].animations)
                     {
-                        //console.log(prop,arr[i].animations[prop]);
                         for(var j=0;j<manifestLength;j++)
                         {
                             if(picArr[j])
@@ -224,12 +444,10 @@
                     }
                     picArr.push({id:'test'+ i.toString(),src:gamedataArr[i].images[0]});
                 }
-                console.log(picArr);
                 queue.loadManifest(picArr);
             }
             else
             {
-                //加载小图;
                 initMain();
             }
         }
@@ -244,7 +462,6 @@
             initMain();
         }
 
-        //
         function initMain()
         {
             canvas = document.getElementById('canvas');
@@ -254,7 +471,6 @@
 
             if(isLoadBigPic)
             {
-                //加载大图 解析大图;
                 for(var i=0;i<gamedataArr.length;i++)
                 {
                     setImgItem(gamedataArr[i],lib,images);
@@ -262,7 +478,6 @@
 
                 for(var j=0;j<picArr.length;j++)
                 {
-                    //console.log(picArr[j]);
                     for(var k=0;k<picTotal;k++)
                     {
                         if(lib.properties.manifest[k].id==picArr[j].id)
@@ -271,12 +486,10 @@
                         }
                     }
                 }
-                console.log('pic num:',picArr.length);
                 initHandleComplete();
             }
             else
             {
-                //加载小图;
                 var loader = new createjs.LoadQueue(false);
                 loader.addEventListener("fileload", initHandleFileLoad);
                 loader.addEventListener("complete", initHandleComplete);
@@ -287,13 +500,10 @@
         function initHandleFileLoad(evt) {
             picNum+=1;
             loadingProgress=picNum/picTotal;
-            //console.log(loadingProgress);
             if (evt.item.type == "image") { images[evt.item.id] = evt.result; }
         }
 
         function initHandleComplete() {
-            console.log('handleCompleteInit');
-
             exportRoot = new lib.main();
 
             stage = new createjs.Stage(canvas);
@@ -307,32 +517,24 @@
                 $time = new Date().getTime();
             }
 
-
             createjs.Ticker.setFPS(lib.properties.fps);
             createjs.Ticker.addEventListener("tick", stageFun);
 
             createjs.EventDispatcher.initialize(model);
 
-            //new app.init();
             screenPanel=new screenObj();
             screenPanel.init();
 
             appPanel=new appObj();
             appPanel.init();
-
-            //test;
-            //loadingNone();
-            //gameStart();
         }
 
-        //由于大图解析成小图需要一个过度时间3-4s,所以需要先用loading遮挡;
         function loadingNone()
         {
             stage.removeChild(loading);
             document.getElementById('loading').style.display="none";
         }
 
-        //帧频显示;
         function stageFun()
         {
             if(isNeedFps)
@@ -350,12 +552,10 @@
 
         function gameStart()
         {
-
         }
 
         function gameOver()
         {
-
         }
 
         function inputNamePanelStartGame()
@@ -451,4 +651,4 @@
     </script>
 </head>
 
-</html><!--[if !IE]>|xGv00|a221b93aaaa31cf3dcd8f6ed331efa79<![endif]-->
+</html>

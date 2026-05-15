@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Created by quanchen on 2014/12/1.
  */
 function appObj()
@@ -108,6 +108,27 @@ function appObj()
         rndTime=setInterval(addRnd,1000);
         console.log('rndTime teachComplete');
         addRnd();
+    }
+
+    function markUserPlayed()//标记用户已完成首次游戏教程;
+    {
+        if(window.currentUser&&window.currentUser.username)
+        {
+            window.currentUser.firstPlay=false;
+            localStorage.setItem('current_user',JSON.stringify(window.currentUser));
+            
+            var users=localStorage.getItem('game_users');
+            var userList=users?JSON.parse(users):[];
+            var index=userList.findIndex(function(u){
+                return u.username==window.currentUser.username;
+            });
+            if(index!=-1)
+            {
+                userList[index].firstPlay=false;
+                localStorage.setItem('game_users',JSON.stringify(userList));
+            }
+            console.log('用户已完成首次游戏教程');
+        }
     }
 
     function addRnd()
@@ -747,6 +768,7 @@ function appObj()
                 {
                     //teach._mc.gotoAndStop(2);
                     isNeedTeach=false;
+                    markUserPlayed();
                     setTimeout(function(){
                         teachComplete();
                     },1500);
