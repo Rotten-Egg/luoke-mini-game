@@ -112,20 +112,21 @@ function appObj()
 
     function markUserPlayed()//标记用户已完成首次游戏教程;
     {
-        if(window.currentUser&&window.currentUser.username)
+        if(window.currentUser && window.currentUser.username)
         {
-            window.currentUser.firstPlay=false;
-            localStorage.setItem('current_user',JSON.stringify(window.currentUser));
+            window.currentUser.firstPlay = false;
+            window.isNeedTeach = false;
+            localStorage.setItem('current_user', JSON.stringify(window.currentUser));
             
-            var users=localStorage.getItem('game_users');
-            var userList=users?JSON.parse(users):[];
-            var index=userList.findIndex(function(u){
-                return u.username==window.currentUser.username;
+            var users = localStorage.getItem('game_users');
+            var userList = users ? JSON.parse(users) : [];
+            var index = userList.findIndex(function(u){
+                return u.username == window.currentUser.username;
             });
-            if(index!=-1)
+            if(index != -1)
             {
-                userList[index].firstPlay=false;
-                localStorage.setItem('game_users',JSON.stringify(userList));
+                userList[index].firstPlay = false;
+                localStorage.setItem('game_users', JSON.stringify(userList));
             }
             console.log('用户已完成首次游戏教程');
         }
@@ -543,7 +544,7 @@ function appObj()
         tip.innerHTML = '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
             'background:rgba(255, 0, 0, 0.9);color:#fff;padding:20px 40px;border-radius:10px;' +
             'z-index:99995;font-size:20px;font-weight:bold;box-shadow:0 0 30px rgba(255,0,0,0.5);">' +
-            '❤️ 复活成功! ❤️</div>';
+            '❤️ 复活成功! </div>';
         document.body.appendChild(tip);
         
         // 2秒后自动消失

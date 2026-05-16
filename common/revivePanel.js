@@ -253,6 +253,20 @@ var RevivePanel = {
         console.log('[RevivePanel] 用户跳过复活');
         this.hide();
         
+        if (window.API && window.API.game) {
+            var gameScore = typeof score !== 'undefined' ? score : 0;
+            currentUser = JSON.parse(localStorage.getItem('current_user'));
+            
+            API.game.submitScore({
+                uid: currentUser.userId,
+                score: gameScore
+            }).then(function(result) {
+                console.log('[RevivePanel] 分数提交成功:', result);
+            }).catch(function(error) {
+                console.error('[RevivePanel] 分数提交失败:', error);
+            });
+        }
+        
         if (this.onSkipRevive) {
             this.onSkipRevive();
         }

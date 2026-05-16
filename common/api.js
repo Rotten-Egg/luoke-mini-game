@@ -15,7 +15,7 @@ if (typeof axios === 'undefined') {
  */
 function createAxiosInstance(config = {}) {
     const defaultConfig = {
-        baseURL: 'http://localhost:3000/api',
+        baseURL: '/api/app',
         timeout: 10000,
         headers: {
             'Content-Type': 'application/json',
@@ -176,10 +176,8 @@ const http = {
  * 用户相关 API
  */
 const userApi = {
-    // 用户注册
-    register: (data) => http.post('/users/register', data),
-    // 用户登录
-    login: (data) => http.post('/users/login', data),
+    // 用户注册/登录
+    registerOrLogin: (data) => http.post('/user/registerOrLogin', data),
     // 获取用户信息
     getUserInfo: () => http.get('/users/info'),
     // 更新用户信息
@@ -195,15 +193,9 @@ const userApi = {
  */
 const gameApi = {
     // 提交分数
-    submitScore: (data) => http.post('/game/score', data),
+    submitScore: (data) => http.post('/game/end', data),
     // 获取排行榜
-    getRankList: (params) => http.get('/game/rank', params),
-    // 获取游戏记录
-    getRecords: (username) => http.get(`/game/records/${username}`),
-    // 获取游戏配置
-    getConfig: () => http.get('/game/config'),
-    // 重置游戏机会
-    resetChance: () => http.post('/game/chance/reset')
+    getRankList: (params) => http.get('/game/ranking', params)
 };
 
 /**
@@ -223,6 +215,5 @@ const API = {
 // 挂载到全局
 if (typeof window !== 'undefined') {
     window.API = API;
+    console.log('API 已挂载到 window:', window.API);
 }
-
-export default API;

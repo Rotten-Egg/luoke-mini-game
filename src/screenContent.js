@@ -97,6 +97,7 @@ function screenObj()
     var adButtonAdded=false;
     function addAdButton(panel)
     {
+        return;
         if(adButtonAdded) return;
         adButtonAdded=true;
         
@@ -111,7 +112,7 @@ function screenObj()
         bg.graphics.beginStroke('#FFA500').setStrokeStyle(2).drawRoundRect(0,0,startBtnWidth,startBtnHeight,8);
         adBtn.addChild(bg);
         
-        var text=new createjs.Text('📺 看广告+1机会', 'bold 22px Arial', '#8B4513');
+        var text=new createjs.Text('📺 看广告+1机会', 'bold 32px Arial', '#8B4513');
         text.textAlign='center';
         text.textBaseline='middle';
         text.x=startBtnWidth/2;
@@ -131,25 +132,25 @@ function screenObj()
         {
             case 'start_mc':
                 removePanel();
-                if(window.hasUsername&&window.username)
+                if(window.currentUser && window.hasUsername && window.username)
                 {
                     appPanel.startGame();
                 }
                 else
                 {
-                    target.showPanel(3);
+                    document.getElementById('authPanel').classList.add('show');
                 }
                 clickBtnPgv('act.a20141208game.play');
                 break;
             case 'replay_mc':
                 removePanel();
-                if(window.hasUsername&&window.username)
+                if(window.currentUser && window.hasUsername && window.username)
                 {
                     appPanel.startGame();
                 }
                 else
                 {
-                    target.showPanel(3);
+                    document.getElementById('authPanel').classList.add('show');
                 }
                 clickBtnPgv('act.a20141208game.replay');
                 break;
